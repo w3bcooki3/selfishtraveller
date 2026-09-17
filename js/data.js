@@ -26,13 +26,13 @@ const IMG = {
 function img(key, w) { return `${IMG[key]}?w=${w || 1200}&q=80&auto=format&fit=crop`; }
 
 const SITE = {
-  name: "Arjun Mehta",
+  name: "Selfish Traveller",
   role: "Adventure filmmaker. Trekker. Storyteller.",
   tagline: "Stories from the wild.",
   base: "Manali, Himachal Pradesh",
-  email: "hello@arjunmehta.com",
+  email: "",
   logoMark: "AM",
-  copyrightName: "Arjun Mehta",
+  copyrightName: "Selfish Traveller",
 };
 
 const STATS = [
@@ -52,12 +52,12 @@ const NAV_LINKS = [
 ];
 
 const SOCIAL_LINKS = [
-  { platform: "Instagram", handle: "@arjunmehta.trails", url: "https://instagram.com/REPLACE_ME", icon: "instagram" },
-  { platform: "YouTube", handle: "Arjun Mehta", url: "https://youtube.com/REPLACE_ME", icon: "youtube" },
-  { platform: "TikTok", handle: "@arjunmehta", url: "https://tiktok.com/@REPLACE_ME", icon: "tiktok" },
-  { platform: "X", handle: "@arjunontrail", url: "https://x.com/REPLACE_ME", icon: "x" },
-  { platform: "Facebook", handle: "Arjun Mehta Films", url: "https://facebook.com/REPLACE_ME", icon: "facebook" },
-  { platform: "LinkedIn", handle: "Arjun Mehta", url: "https://linkedin.com/in/REPLACE_ME", icon: "linkedin" },
+  { platform: "Instagram", handle: "@selfishtraveller.trails", url: "https://instagram.com/REPLACE_ME", icon: "instagram" },
+  { platform: "YouTube", handle: "Selfish Traveller", url: "https://youtube.com/REPLACE_ME", icon: "youtube" },
+  { platform: "TikTok", handle: "@selfishtraveller", url: "https://tiktok.com/@REPLACE_ME", icon: "tiktok" },
+  { platform: "X", handle: "@selfishtravvelontrail", url: "https://x.com/REPLACE_ME", icon: "x" },
+  { platform: "Facebook", handle: "Selfish Traveller Films", url: "https://facebook.com/REPLACE_ME", icon: "facebook" },
+  { platform: "LinkedIn", handle: "Selfish Traveller", url: "https://linkedin.com/in/REPLACE_ME", icon: "linkedin" },
 ];
 
 /* ------------------------- Featured Journeys ------------------------- */
