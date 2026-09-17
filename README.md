@@ -1,4 +1,4 @@
-# Arjun Mehta — Personal Brand Website
+# Selfish Traveller — Personal Brand Website
 
 A static, dependency-free site (HTML + CSS + vanilla JS). No build step —
 open `index.html` in a browser or deploy the folder as-is.
