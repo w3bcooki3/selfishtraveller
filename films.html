@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" data-theme="dusk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Films — Aman Saini · Selfish Traveller</title>
+<meta name="description" content="Every film and short by Aman Saini — solo adventure and travel films from British Columbia, Canada.">
+<meta name="theme-color" content="#0b0e0d">
+<script>try{var t=localStorage.getItem("st-theme");document.documentElement.dataset.theme=["dusk","sun","rain","wind","forest","night"].indexOf(t)>-1?t:"dusk"}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body data-page="films">
+<a class="skip" href="#main">Skip to content</a>
+<div class="grain" aria-hidden="true"></div>
+<header id="site-header"></header>
+
+<main id="main">
+<section class="hero hero--page bars" id="top" aria-label="Films">
+  <div class="hero__slides" aria-hidden="true"></div>
+  <div class="hero__tint" aria-hidden="true"></div>
+  <div class="hero__shade" aria-hidden="true"></div>
+  <canvas class="wx" aria-hidden="true"></canvas>
+  <div class="corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="hud hud--tl mono fade-in" aria-hidden="true"><span class="rec"></span> REC <span id="tc">00:00:00:00</span></div>
+  <div class="hud hud--tr mono fade-in" aria-hidden="true">Screening room<br><span style="opacity:.6">All films · <span data-theme-name>Dusk</span></span></div>
+  <div class="hero__body">
+    <div class="wrap">
+      <span class="kicker mono fade-in">The screening room</span>
+      <h1 class="h1"><span class="ln"><span>Films &amp;</span></span><span class="ln"><span><em>Shorts</em></span></span></h1>
+      <div class="hero__row fade-in">
+        <p class="hero__lead">Every trip, cut into a story. <strong>Filmed solo, carried in on my back</strong>, edited slowly — the misses stay in.</p>
+        <div class="stats" id="fstats"></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero__foot"><div class="wrap mono"><span class="cap" id="cap"></span><div class="dots" id="dots"><button class="is-on" aria-label="Scene 1"></button><button aria-label="Scene 2"></button></div><span class="scroll-cue"><i></i>Scroll</span></div></div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="player" id="player"></div>
+  </div>
+</section>
+
+<section class="sec sec--tight" id="all">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="chapter mono rv"><b>01</b> The films</div><h2 class="h2 rv">Every trip, <em>start to finish</em></h2></div>
+      <div class="chips" id="fchips" aria-label="Filter films"></div>
+    </div>
+    <div class="fgrid" id="fgrid"></div>
+  </div>
+</section>
+
+<section class="sec sec--tight" id="edit-sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><div class="chapter mono rv"><b>02</b> In the edit</div><h2 class="h2 rv">Coming <em>soon</em></h2></div>
+      <p class="sub rv" style="margin:0">Trips that are shot and waiting on the timeline. Follow on YouTube to catch them first.</p>
+    </div>
+    <div class="fgrid" id="edit"></div>
+  </div>
+</section>
+
+<section class="sec films" id="shorts">
+  <div class="wrap">
+    <div class="shorts__head">
+      <div><div class="chapter mono rv"><b>03</b> Shorts</div><h2 class="h2 rv" style="font-size:clamp(40px,5vw,76px)">Under a <em>minute</em></h2></div>
+      <a class="link" href="https://www.youtube.com/@Selfishtraveller/shorts" target="_blank" rel="noopener">All shorts on YouTube <span>↗</span></a>
+    </div>
+    <div class="shelf" id="shelf"></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="band rv">
+      <h3>New films land on <em>YouTube first.</em></h3>
+      <div class="cta-row"><a class="btn btn--glow" href="https://www.youtube.com/@Selfishtraveller" target="_blank" rel="noopener">Open the channel ↗</a><a class="btn btn--ghost" href="index.html#collab">Commission a film</a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="trek-slot" aria-hidden="true"></div>
+<footer id="site-footer"></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>
