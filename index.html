@@ -17,6 +17,7 @@
 <link rel="preconnect" href="https://images.unsplash.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/mobile.css">
 </head>
 <body data-page="home">
 <a class="skip" href="#main">Skip to content</a>
@@ -57,16 +58,19 @@
   </div>
 </section>
 
-<div class="marquee" aria-hidden="true"><div class="marquee__track">
+<!-- phones: everything below the hero is the "Pocket" layout, built by mobile.js -->
+<div class="mob" id="mob"></div>
+
+<div class="marquee dsk" aria-hidden="true"><div class="marquee__track">
   <span>Coast Mountains</span><span>Old-growth forest</span><span>Grizzly country</span><span>Alpine lakes</span><span>Solo treks</span><span>Wild camps</span><span>Canadian Rockies</span>
   <span>Coast Mountains</span><span>Old-growth forest</span><span>Grizzly country</span><span>Alpine lakes</span><span>Solo treks</span><span>Wild camps</span><span>Canadian Rockies</span>
 </div></div>
 
 <!-- the walking party — changes with the theme -->
-<div class="trek-slot" aria-hidden="true"></div>
+<div class="trek-slot dsk" aria-hidden="true"></div>
 
 <!-- ══ ABOUT ══ -->
-<section class="sec" id="about">
+<section class="sec dsk" id="about">
   <div class="wrap maker">
     <figure class="portrait rv">
       <span class="ph rv-img"><img src="https://images.unsplash.com/photo-1611925939562-3483c4095d13?auto=format&fit=crop&w=1000&h=1250&q=78" alt="Aman filming at sunset (stand-in photo — replace with a real portrait)" loading="lazy"></span>
@@ -86,7 +90,7 @@
 </section>
 
 <!-- ══ FILMS + SHORTS ══ -->
-<section class="sec films" id="films">
+<section class="sec films dsk" id="films">
   <div class="wrap">
     <div class="sec-head">
       <div><div class="chapter mono rv"><b>02</b> Now showing</div><h2 class="h2 rv">Films from the <em>edge of the map</em></h2></div>
@@ -107,7 +111,7 @@
 </section>
 
 <!-- ══ WILDLIFE ══ -->
-<section class="sec" id="wild">
+<section class="sec dsk" id="wild">
   <div class="wrap wild__layout">
     <div class="wild__intro">
       <div class="chapter mono rv"><b>03</b> Field guide</div>
@@ -129,7 +133,7 @@
 </section>
 
 <!-- ══ JOURNAL ══ -->
-<section class="sec sec--tight" id="journal">
+<section class="sec sec--tight dsk" id="journal">
   <div class="wrap">
     <div class="sec-head">
       <div><div class="chapter mono rv"><b>04</b> Field journal</div><h2 class="h2 rv">Trips, <em>written down</em></h2></div>
@@ -146,7 +150,7 @@
 </section>
 
 <!-- ══ FRAMES ══ -->
-<section class="sec sec--tight" id="frames">
+<section class="sec sec--tight dsk" id="frames">
   <div class="wrap">
     <div class="sec-head">
       <div><div class="chapter mono rv"><b>05</b> Frames</div><h2 class="h2 rv">Stills from <em>the long way round</em></h2></div>
@@ -163,10 +167,10 @@
 </section>
 
 <!-- ══ THE KEEPERS — print wall ══ -->
-<section class="collage" id="collage" aria-label="Best photographs"></section>
+<section class="collage dsk" id="collage" aria-label="Best photographs"></section>
 
 <!-- ══ INSTAGRAM ══ -->
-<section class="sec" id="instagram">
+<section class="sec dsk" id="instagram">
   <div class="wrap">
     <div class="sec-head">
       <div><div class="chapter mono rv"><b>06</b> On Instagram</div><h2 class="h2 rv">Reels from <em>the road</em></h2></div>
@@ -177,7 +181,7 @@
 </section>
 
 <!-- ══ FOLLOW — every channel ══ -->
-<section class="sec hub" id="follow">
+<section class="sec hub dsk" id="follow">
   <div class="wrap">
     <div class="sec-head">
       <div><div class="chapter mono rv"><b>07</b> Follow the journey</div><h2 class="h2 rv">Everywhere <em>the signal reaches</em></h2></div>
@@ -188,7 +192,7 @@
 </section>
 
 <!-- ══ COLLAB ══ -->
-<section class="collab" id="collab">
+<section class="collab dsk" id="collab">
   <div class="ph"><img src="https://images.unsplash.com/photo-1666974993470-d1116c9667e4?auto=format&fit=crop&w=2000&q=78" alt="" loading="lazy"></div>
   <div class="wrap">
     <div class="chapter mono rv"><b>08</b> Collaborate</div>
@@ -204,5 +208,6 @@
 
 <script src="assets/js/data.js"></script>
 <script src="assets/js/site.js"></script>
+<script src="assets/js/mobile.js"></script>
 </body>
 </html>

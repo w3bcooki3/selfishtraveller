@@ -18,6 +18,7 @@ const HOME = PAGE === "home" ? "" : "index.html";
 /* ───────── images ───────── */
 const IMG = (src, w = 1600, ratio) => {
   if (!src) return "";
+  w = Math.min(w, Math.max(400, Math.ceil(innerWidth * Math.min(devicePixelRatio || 1, 2) / 200) * 200));
   if (src.startsWith("u:")) {
     const id = STOCK[src.slice(2)];
     let h = "";
@@ -76,6 +77,11 @@ const playSvg = '<svg viewBox="0 0 8 10" aria-hidden="true"><path d="M0 0l8 5-8 
 const socialHref = s => s.url ? `href="${esc(s.url)}" target="_blank" rel="noopener me"` : `href="#" data-soon aria-disabled="true"`;
 
 /* ───────── toast ───────── */
+let lockY = 0, locks = 0;
+const lock = on => {
+  if (on) { if (locks++ === 0) { lockY = scrollY; Object.assign(d.body.style, { position: "fixed", top: -lockY + "px", left: "0", right: "0", overflow: "hidden" }); } }
+  else if (locks > 0 && --locks === 0) { Object.assign(d.body.style, { position: "", top: "", left: "", right: "", overflow: "" }); scrollTo(0, lockY); }
+};
 const toastEl = d.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); d.body.append(toastEl);
 let toastT;
 const toast = msg => { toastEl.textContent = msg; toastEl.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove("on"), 3200); };
@@ -168,11 +174,11 @@ if (hdr) {
 
   const tbtn = $("#tbtn"), tpop = $("#tpop");
   const pop = o => { tpop.classList.toggle("open", o); tbtn.setAttribute("aria-expanded", o); };
-  tbtn.addEventListener("click", e => { e.stopPropagation(); pop(!tpop.classList.contains("open")); });
+  tbtn.addEventListener("click", e => { e.stopPropagation(); if (window.ST && ST.mobile && ST.mobile()) { ST.openThemes(); return; } pop(!tpop.classList.contains("open")); });
   d.addEventListener("click", e => { if (!e.target.closest("#tpop")) pop(false); });
-  $$("[data-theme-opt]").forEach(b => b.addEventListener("click", () => { setTheme(b.dataset.themeOpt); pop(false); }));
+  
   const burger = $("#burger");
-  const menu = o => { d.body.classList.toggle("menu-open", o); burger.setAttribute("aria-expanded", o); d.body.style.overflow = o ? "hidden" : ""; };
+  const menu = o => { d.body.classList.toggle("menu-open", o); burger.setAttribute("aria-expanded", o); lock(o); };
   burger.addEventListener("click", () => menu(!d.body.classList.contains("menu-open")));
   $$(".sheet ol a").forEach(a => a.addEventListener("click", () => menu(false)));
   addEventListener("keydown", e => { if (e.key === "Escape") { menu(false); pop(false); } });
@@ -185,7 +191,7 @@ const rail = d.createElement("aside");
 rail.className = "rail"; rail.setAttribute("aria-label", "Social channels");
 rail.innerHTML = `<span class="rail__lab">Follow</span><span class="rail__line"></span>` +
   SOCIAL.filter(s => s.rail).map(s => `<a ${socialHref(s)} aria-label="${s.label}" title="${s.label}">${icon(s.key)}</a>`).join("");
-d.body.append(rail);
+if (d.body.dataset.rail !== "off") d.body.append(rail);
 
 // footer
 const ft = $("#site-footer");
@@ -395,15 +401,17 @@ function lbShow() {
   $(".lb__n", lb).textContent = `${String(LB.i + 1).padStart(2, "0")} / ${String(LB.list.length).padStart(2, "0")}`;
   [LB.i - 1, LB.i + 1].forEach(j => { const q = LB.list[(j + LB.list.length) % LB.list.length]; if (q) new Image().src = IMG(q.img, 2000); });
 }
-function lbOpen(list, i) { LB.list = list; LB.i = i; LB.last = d.activeElement; lbShow(); lb.classList.add("open"); d.body.style.overflow = "hidden"; $(".lb__x", lb).focus(); }
-function lbClose() { lb.classList.remove("open"); d.body.style.overflow = ""; if (LB.last) LB.last.focus(); }
+function lbOpen(list, i) { LB.list = list; LB.i = i; LB.last = d.activeElement; lbShow(); lb.classList.add("open"); lock(true); $(".lb__x", lb).focus(); }
+function lbClose() { if (!lb.classList.contains("open")) return; lb.classList.remove("open"); lock(false); if (LB.last) LB.last.focus(); }
 const lbStep = s => { LB.i = (LB.i + s + LB.list.length) % LB.list.length; lbShow(); };
 $(".lb__x", lb).onclick = lbClose; $(".lb__nav--p", lb).onclick = () => lbStep(-1); $(".lb__nav--n", lb).onclick = () => lbStep(1);
 lb.addEventListener("click", e => { if (e.target === lb || e.target.classList.contains("lb__stage")) lbClose(); });
 addEventListener("keydown", e => { if (!lb.classList.contains("open")) return; if (e.key === "Escape") lbClose(); if (e.key === "ArrowRight") lbStep(1); if (e.key === "ArrowLeft") lbStep(-1); });
 let sx0 = null; const stage = $(".lb__stage", lb);
-stage.addEventListener("pointerdown", e => sx0 = e.clientX);
-stage.addEventListener("pointerup", e => { if (sx0 != null && Math.abs(e.clientX - sx0) > 50) lbStep(e.clientX < sx0 ? 1 : -1); sx0 = null; });
+let sy0 = null;
+stage.addEventListener("pointerdown", e => { sx0 = e.clientX; sy0 = e.clientY; });
+stage.addEventListener("pointerup", e => { if (sx0 == null) return; const dx = e.clientX - sx0, dy = e.clientY - sy0;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) lbStep(dx < 0 ? 1 : -1); else if (dy > 90) lbClose(); sx0 = sy0 = null; });
 d.addEventListener("click", e => {
   const t = e.target.closest("[data-photo]"); if (!t) return;
   e.preventDefault();
@@ -421,7 +429,7 @@ const vm = d.createElement("div");
 vm.className = "vm"; vm.setAttribute("role", "dialog"); vm.setAttribute("aria-modal", "true"); vm.setAttribute("aria-label", "Video player");
 vm.innerHTML = `<span class="vm__t mono"></span><button class="lb__x" aria-label="Close video">✕</button><div class="vm__box"></div>`;
 d.body.append(vm);
-const vmClose = () => { vm.classList.remove("open"); $(".vm__box", vm).innerHTML = ""; d.body.style.overflow = ""; };
+const vmClose = () => { if (!vm.classList.contains("open")) return; vm.classList.remove("open"); $(".vm__box", vm).innerHTML = ""; lock(false); };
 $(".lb__x", vm).onclick = vmClose;
 vm.addEventListener("click", e => { if (e.target === vm) vmClose(); });
 addEventListener("keydown", e => { if (e.key === "Escape" && vm.classList.contains("open")) vmClose(); });
@@ -433,7 +441,7 @@ d.addEventListener("click", e => {
   const box = $(".vm__box", vm); box.classList.toggle("v", v);
   box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1" title="${esc(a.dataset.title || "Video")}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
   $(".vm__t", vm).textContent = a.dataset.title || "";
-  vm.classList.add("open"); d.body.style.overflow = "hidden"; $(".lb__x", vm).focus();
+  vm.classList.add("open"); lock(true); $(".lb__x", vm).focus();
 });
 const videoAttrs = (url, title, vertical) => `href="${esc(url)}" target="_blank" rel="noopener" data-video="${esc(url)}" data-title="${esc(title)}"${vertical ? ' data-vertical="1"' : ""}`;
 
@@ -493,7 +501,8 @@ function mountHero(hero, slidesFor) {
   onTheme(build);
   const tc = $("#tc", hero);
   if (tc && !reduce) { const t0 = performance.now(), p = n => String(n).padStart(2, "0");
-    const tick = () => { const s = (performance.now() - t0) / 1000; tc.textContent = `${p(Math.floor(s / 3600))}:${p(Math.floor(s / 60) % 60)}:${p(Math.floor(s) % 60)}:${p(Math.floor((s % 1) * 24))}`; requestAnimationFrame(tick); }; tick(); }
+    let tcOn = true; new IntersectionObserver(es => { tcOn = es[0].isIntersecting; if (tcOn) tick(); }).observe(hero);
+    const tick = () => { if (!tcOn) return; const s = (performance.now() - t0) / 1000; tc.textContent = `${p(Math.floor(s / 3600))}:${p(Math.floor(s / 60) % 60)}:${p(Math.floor(s) % 60)}:${p(Math.floor((s % 1) * 24))}`; requestAnimationFrame(tick); }; tick(); }
   const cv = $("canvas.wx", hero); if (cv) weatherOn(cv, .6);
 }
 
@@ -614,6 +623,10 @@ function photography() {
   const n = $("#pstats"); if (n) n.innerHTML = `<div><b>${PHOTOS.length}</b><span class="mono">Photographs</span></div><div><b>${cats.length - 1}</b><span class="mono">Collections</span></div><div><b>${PHOTOS.filter(p => p.cat === "Wildlife").length}</b><span class="mono">Wildlife frames</span></div>`;
 }
 
+d.addEventListener("click", e => { const b = e.target.closest("[data-theme-opt]"); if (!b) return; setTheme(b.dataset.themeOpt); const tp = $("#tpop"); if (tp) tp.classList.remove("open"); });
+window.ST = { IMG, ytId, ytThumb, icon, ICONS, TICONS, SWATCH, BRAND, esc, toast, setTheme, onTheme, resolved, applyTheme, lock,
+  lbOpen, weatherOn, mountTrek, mountHero, videoAttrs, photo, socialHref, shortCard, tile, renderCollage, playSvg, fmtDate, TREK_CAP,
+  get live() { return live; } };
 /* ═══════════════ BOOT ═══════════════ */
 applyTheme();
 // fill static photo slots (<… data-photo="p04" data-fill>) from PHOTOS
@@ -630,6 +643,7 @@ fetchLive();
 // reveal on scroll, with a safety net so nothing can stay hidden
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -6% 0px", threshold: .04 });
 const watch = () => $$(".rv:not(.in),.rv-img:not(.in)").forEach(el => io.observe(el));
+window.ST.watch = watch;
 watch();
 setTimeout(() => $$(".rv:not(.in),.rv-img:not(.in)").forEach(el => { if (el.getBoundingClientRect().top < innerHeight) el.classList.add("in"); }), 2500);
 addEventListener("load", () => setTimeout(watch, 100));

@@ -9,6 +9,8 @@ photography.html    Photography (gallery, best-of print wall, licensing)
 assets/css/site.css All styles, including the 6 themes
 assets/js/data.js   ← THE CONTENT FILE: edit this one
 assets/js/site.js   Behaviour (themes, walking band, lightbox, video player…)
+assets/css/mobile.css  Phone layout + mobile fixes (desktop never uses it)
+assets/js/mobile.js    Phone layout: tab bar, story viewer, theme sheet, Pocket homepage
 ```
 
 ## Editing content: `assets/js/data.js`
@@ -58,3 +60,12 @@ can be screenshotted, which is why only reduced web copies should be uploaded.
 - A real portrait in the About section (index.html, search "stand-in")
 - All `u:` stock images
 - Sample copy: journal trips, species notes, "In the edit" list
+
+## Phones (the "Pocket" layout)
+On screens up to 760px wide (and phones turned sideways) the header and hero stay exactly as on
+desktop. Below the hero the homepage switches to the Pocket layout: an at-a-glance card, Instagram
+story rings (tap = full-screen story viewer), latest film + shorts, the walking band, a wildlife
+swipe row, a filterable photo grid, About, Follow (with reels) and Work together. Every page gets a
+bottom tab bar (it slides in once you scroll past the hero), a theme sheet and a compact footer.
+Everything reads from the same data.js, so there is nothing extra to edit.
+Desktop and tablet layouts are unchanged.
