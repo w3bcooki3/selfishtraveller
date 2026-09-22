@@ -246,7 +246,7 @@ function sound() {
   let on = false;
   const label = () => on ? `Sound · ${resolvedTheme()}` : "Sound off";
   const paint = () => { btn.classList.toggle("on", on); btn.setAttribute("aria-pressed", on); $("#sndL", btn).textContent = label();
-    $$("[data-snd]").forEach(x => { x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); const l = $(".lbl", x); if (l) l.textContent = on ? `On · ${resolvedTheme()}` : "Off"; }); };
+    $$("[data-snd]").forEach(x => { x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); const l = $(".lbl", x); if (l) l.textContent = on ? (x.classList.contains("notch__snd") ? "On" : `On · ${resolvedTheme()}`) : "Off"; }); };
   const toggle = () => { if (!ctx) build(); on = !on; ctx.resume();
     master.gain.setTargetAtTime(on ? .55 : 0, ctx.currentTime, .6); mood(); paint(); };
   btn.addEventListener("click", toggle);
@@ -293,14 +293,35 @@ function phone() {
     if (navigator.vibrate) navigator.vibrate(8);
   }, { passive: true });
 
-  if (PAGE !== "home") return;
+  /* ── sound switch inside the ☰ menu ── */
+  const menuSheet = $(".sheet");
+  if (menuSheet) { const row = d.createElement("button"); row.className = "route__snd menu-snd"; row.type = "button"; row.setAttribute("data-snd", "");
+    row.innerHTML = `<span class="snd__bars"><i></i><i></i><i></i><i></i></span><span><b>Sound of the trail</b><small>Wind, rain, birds or crickets — follows the theme</small></span><span class="lbl mono">Off</span>`;
+    row.addEventListener("click", () => S.sound && S.sound.toggle());
+    const ol = $("ol", menuSheet); ol ? ol.after(row) : menuSheet.prepend(row); }
 
-  /* ── altitude chip over the tab bar + a "route" sheet to jump between camps ── */
-  const chip = d.createElement("button");
-  chip.className = "achip"; chip.type = "button"; chip.setAttribute("aria-haspopup", "dialog");
-  chip.innerHTML = `<i class="achip__ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" pathLength="100"/><circle class="p" cx="18" cy="18" r="15.5" pathLength="100"/></svg><b>▲</b></i>
-    <span><b id="acM">0 m</b><small id="acC">Trailhead</small></span>`;
-  d.body.append(chip);
+  /* ── the notch: a small tab docked on top of the tab bar — altitude on the left, sound on the right ── */
+  const home = PAGE === "home";
+  const notch = d.createElement("div"); notch.className = "notch" + (home ? "" : " notch--solo");
+  notch.innerHTML = (home ? `<button class="notch__alt" type="button" aria-haspopup="dialog" aria-label="Show the route">
+      <i class="achip__ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" pathLength="100"/><circle class="p" cx="18" cy="18" r="15.5" pathLength="100"/></svg></i>
+      <b id="acM">0 m</b><small id="acC">Trailhead</small></button><span class="notch__sep"></span>` : "") +
+    `<button class="notch__snd" type="button" data-snd aria-pressed="false" aria-label="Sound of the trail"><span class="snd__bars"><i></i><i></i><i></i><i></i></span><span class="lbl mono">Off</span></button>`;
+  d.body.append(notch);
+  $(".notch__snd", notch).addEventListener("click", () => S.sound && S.sound.toggle());
+  const line = d.createElement("div"); line.className = "tabline"; line.innerHTML = "<i></i>"; d.body.append(line);
+  const tabsEl = $(".tabs");
+  const sync = () => { const hidden = !tabsEl || tabsEl.classList.contains("away") || d.body.classList.contains("menu-open");
+    notch.classList.toggle("show", !hidden); line.classList.toggle("show", !hidden); };
+  if (tabsEl) new MutationObserver(sync).observe(tabsEl, { attributes: true, attributeFilter: ["class"] });
+  new MutationObserver(sync).observe(d.body, { attributes: true, attributeFilter: ["class"] });
+  sync();
+  S.sound && S.sound.paint();
+  const lineUpd = () => { const max = Math.max(1, d.documentElement.scrollHeight - innerHeight); if (!d.body.classList.contains("menu-open")) $("i", line).style.transform = `scaleX(${clamp(scrollY / max)})`; };
+  addEventListener("scroll", lineUpd, { passive: true }); lineUpd();
+
+  if (!home) return;
+  const chip = $(".notch__alt", notch);
 
   const scrim = d.createElement("div"); scrim.className = "scrim fx route-scrim"; d.body.append(scrim);
   const sheet = d.createElement("div");
@@ -344,15 +365,14 @@ function phone() {
   let lastCamp = -1, curP = 0, ci = 0;
   const upd = () => {
     const isOpen = sheet.classList.contains("open");   // the scroll lock resets scrollY while the sheet is up
-    if (!isOpen) { const max = Math.max(1, d.documentElement.scrollHeight - innerHeight); curP = clamp(scrollY / max);
+    if (!isOpen && !d.body.classList.contains("menu-open")) { const max = Math.max(1, d.documentElement.scrollHeight - innerHeight); curP = clamp(scrollY / max);
       ci = 0; camps.forEach((c, i) => { if (c.t.getBoundingClientRect().top < innerHeight * .45) ci = i; }); }
     const p = curP;
     $("#acM").textContent = fmt(p * SUMMIT.m) + " m";
-    if (camps[ci]) $("#acC").textContent = `${camps[ci].name} · ${camps[ci].what}`;
-    if (ci !== lastCamp && lastCamp !== -1) { chip.classList.remove("bump"); void chip.offsetWidth; chip.classList.add("bump"); if (navigator.vibrate && S.touched) navigator.vibrate([4, 40, 4]); }
+    if (camps[ci]) $("#acC").textContent = camps[ci].what;
+    if (ci !== lastCamp && lastCamp !== -1) { notch.classList.remove("bump"); void notch.offsetWidth; notch.classList.add("bump"); if (navigator.vibrate && S.touched) navigator.vibrate([4, 40, 4]); }
     lastCamp = ci;
     $(".achip__ring .p", chip).style.strokeDashoffset = 100 - p * 100;
-    chip.classList.toggle("show", !hero || hero.getBoundingClientRect().bottom < innerHeight * .6);
     const me = $("#rMe", sheet); if (me) { me.style.left = p * 100 + "%"; me.style.top = prof(p) / H * 100 + "%"; $("#rcr", sheet).setAttribute("width", p * W);
       $$(".route__list li", sheet).forEach((li, i) => { li.classList.toggle("here", i === ci); li.classList.toggle("past", i < ci); });
       $$(".route__pins i", sheet).forEach((pin, i) => pin.classList.toggle("past", i <= ci)); }
