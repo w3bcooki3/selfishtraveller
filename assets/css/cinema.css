@@ -150,22 +150,45 @@
 .achip{display:none}
 @media (max-width:760px),(hover:none) and (pointer:coarse) and (max-height:500px){
   .ascent{display:none}
-  .achip{display:flex;position:fixed;left:50%;bottom:calc(var(--tab,66px) + var(--safe-b,0px) + 12px);z-index:72;align-items:center;gap:10px;
-    height:46px;padding:0 16px 0 6px;border-radius:99px;border:1px solid var(--line-2);color:var(--fog);text-align:left;
-    background:color-mix(in srgb,var(--ink) 78%,transparent);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
-    box-shadow:0 10px 30px -10px rgba(0,0,0,.7);transform:translate(-50%,160%);opacity:0;transition:transform .55s var(--ease),opacity .4s}
-  .achip.show{transform:translate(-50%,0);opacity:1}
-  .achip.bump{animation:bump .6s var(--ease)}
-  @keyframes bump{30%{transform:translate(-50%,-6px) scale(1.04)}}
   .achip__ring{position:relative;width:34px;height:34px;display:grid;place-items:center;flex:none}
   .achip__ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
   .achip__ring circle{fill:none;stroke:var(--line-2);stroke-width:2.2}
   .achip__ring circle.p{stroke:var(--glow);stroke-dasharray:100;stroke-dashoffset:100;stroke-linecap:round;transition:stroke-dashoffset .2s}
   .achip__ring b{font-size:10px;color:var(--glow);font-style:normal}
-  .achip>span{display:flex;flex-direction:column;line-height:1.15}
-  .achip>span b{font-family:var(--serif);font-weight:400;font-size:19px;font-variant-numeric:tabular-nums}
-  .achip>span small{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--fog-3);white-space:nowrap}
+  /* the notch — docked to the top of the tab bar, so it never floats over content */
+  .notch{display:flex;position:fixed;left:50%;bottom:calc(var(--tab,66px) + var(--safe-b,0px) - 1px);z-index:71;align-items:stretch;
+    height:30px;border-radius:14px 14px 0 0;border:1px solid var(--line-2);border-bottom:0;
+    background:color-mix(in srgb,var(--ink) 88%,transparent);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);
+    transform:translate(-50%,calc(100% + var(--tab,66px) + var(--safe-b,0px)));opacity:0;pointer-events:none;transition:transform .45s var(--ease),opacity .3s;font-family:var(--mono);color:var(--fog-2);white-space:nowrap}
+  .notch.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .notch.bump .achip__ring{animation:ping .7s var(--ease)}
+  @keyframes ping{40%{transform:scale(1.25)}}
+  .notch button{display:flex;align-items:center;gap:7px;padding:0 12px;height:100%;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:inherit}
+  .notch__alt b{font-family:var(--serif);font-weight:400;font-size:15px;letter-spacing:0;text-transform:none;color:var(--fog);font-variant-numeric:tabular-nums}
+  .notch__alt small{font-size:9px;color:var(--fog-3);white-space:nowrap}
+  .notch__sep{width:1px;margin:7px 0;background:var(--line-2)}
+  .notch__snd .lbl{font-size:9px}
+  .notch__snd.on{color:var(--glow-2)}
+  .notch__snd.on .snd__bars i,.menu-snd.on .snd__bars i{animation:eq 1s ease-in-out infinite alternate}
+  .notch__snd.on .snd__bars i:nth-child(2),.menu-snd.on .snd__bars i:nth-child(2){animation-delay:-.3s}
+  .notch__snd.on .snd__bars i:nth-child(3),.menu-snd.on .snd__bars i:nth-child(3){animation-delay:-.6s}
+  .notch .achip__ring{width:20px;height:20px}
+  .notch .achip__ring circle{stroke-width:3}
+  /* summit progress along the top edge of the tab bar */
+  .tabline{position:fixed;left:0;right:0;bottom:calc(var(--tab,66px) + var(--safe-b,0px));height:1.5px;z-index:71;pointer-events:none;opacity:0;transition:opacity .4s}
+  .tabline.show{opacity:1}
+  .tabline i{display:block;height:100%;background:linear-gradient(90deg,rgba(var(--glow-rgb),.2),var(--glow));transform-origin:left;transform:scaleX(0);box-shadow:0 0 8px rgba(var(--glow-rgb),.7)}
 
+  /* ☰ menu on phones: fits the screen, nothing hidden behind the tab bar */
+  .menu-open .tabs{transform:translateY(110%)!important}
+  .sheet{padding:84px var(--mpad,18px) calc(28px + var(--safe-b,0px));gap:22px}
+  .sheet ol a{font-size:clamp(28px,8.2vw,40px);padding:8px 0}
+  .sheet__themes{grid-template-columns:repeat(4,1fr)}
+  .sheet__themes button{padding:9px 2px;font-size:11px}
+  .menu-snd{margin:0}
+  .menu-open .hdr{background:var(--ink)}
+  .brand__txt b{white-space:nowrap}
+  @media (max-width:370px){.brand__txt b{font-size:15px}}
   /* the route sheet */
   .route-scrim{z-index:96}
   .route{z-index:97;padding-bottom:calc(18px + var(--safe-b,0px))}
@@ -190,11 +213,11 @@
   .route__list li.here button{background:linear-gradient(90deg,rgba(var(--glow-rgb),.14),transparent);border-radius:12px}
   .route__list li.here .n,.route__list li.here .m{color:var(--glow)}
   .route__list li.here b::after{content:"  ● you are here";font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--glow);vertical-align:2px}
-  .route__snd{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;width:100%;padding:14px 16px;border-radius:16px;border:1px solid var(--line-2);text-align:left;color:var(--fog-2)}
-  .route__snd b{display:block;color:var(--fog);font-weight:500}
-  .route__snd small{font-size:12px;color:var(--fog-3)}
-  .route__snd .lbl{font-size:10px}
-  .route__snd.on{border-color:var(--glow);color:var(--glow-2)}
+  .route__snd,.menu-snd{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;width:100%;padding:14px 16px;border-radius:16px;border:1px solid var(--line-2);text-align:left;color:var(--fog-2)}
+  .route__snd b,.menu-snd b{display:block;color:var(--fog);font-weight:500}
+  .route__snd small,.menu-snd small{font-size:12px;color:var(--fog-3)}
+  .route__snd .lbl,.menu-snd .lbl{font-size:10px}
+  .route__snd.on,.menu-snd.on{border-color:var(--glow);color:var(--glow-2)}
   .route__snd.on .snd__bars i{animation:eq 1s ease-in-out infinite alternate}
   .route__snd.on .snd__bars i:nth-child(2){animation-delay:-.3s}.route__snd.on .snd__bars i:nth-child(3){animation-delay:-.6s}.route__snd.on .snd__bars i:nth-child(4){animation-delay:-.15s}
 
