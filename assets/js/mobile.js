@@ -14,8 +14,12 @@ const esc = S.esc, PAGE = d.body.dataset.page || "home", HOME = PAGE === "home" 
 S.mobile = () => MQ.matches;
 S.openThemes = () => M.open("themes");
 
-// Crossing the breakpoint (e.g. rotating a tablet or resizing a window) re-lays the page cleanly.
-MQ.addEventListener?.("change", () => location.reload());
+// Only a desktop window dragged across the breakpoint re-lays the page. Phones never reload
+// (mobile browsers fire spurious media-query changes while the address bar shows/hides).
+if (matchMedia("(hover:hover) and (pointer:fine)").matches) {
+  const start = MQ.matches; let t;
+  MQ.addEventListener?.("change", () => { clearTimeout(t); t = setTimeout(() => { if (MQ.matches !== start) location.reload(); }, 400); });
+}
 if (!MQ.matches) return;
 
 const M = {};

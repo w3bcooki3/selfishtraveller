@@ -77,11 +77,17 @@ const playSvg = '<svg viewBox="0 0 8 10" aria-hidden="true"><path d="M0 0l8 5-8 
 const socialHref = s => s.url ? `href="${esc(s.url)}" target="_blank" rel="noopener me"` : `href="#" data-soon aria-disabled="true"`;
 
 /* ───────── toast ───────── */
-let lockY = 0, locks = 0;
+/* Scroll lock for overlays (menu, sheets, photo viewer, video, stories).
+   Idempotent: opening the same overlay twice can never leave the page frozen,
+   and a safety net releases the lock if no overlay is actually open. */
+let lockY = 0, lockedOn = false;
+const overlayOpen = () => !!d.querySelector(".lb.open,.vm.open,.bsheet.open,.sv.open,.tpop.open") || d.body.classList.contains("menu-open");
+const release = () => { if (!lockedOn) return; lockedOn = false; Object.assign(d.body.style, { position: "", top: "", left: "", right: "", width: "", overflow: "" }); scrollTo(0, lockY); };
 const lock = on => {
-  if (on) { if (locks++ === 0) { lockY = scrollY; Object.assign(d.body.style, { position: "fixed", top: -lockY + "px", left: "0", right: "0", overflow: "hidden" }); } }
-  else if (locks > 0 && --locks === 0) { Object.assign(d.body.style, { position: "", top: "", left: "", right: "", overflow: "" }); scrollTo(0, lockY); }
+  if (on) { if (lockedOn) return; lockedOn = true; lockY = scrollY; Object.assign(d.body.style, { position: "fixed", top: -lockY + "px", left: "0", right: "0", width: "100%", overflow: "hidden" }); }
+  else setTimeout(() => { if (!overlayOpen()) release(); }, 0);
 };
+["touchstart", "wheel", "pageshow", "visibilitychange"].forEach(ev => addEventListener(ev, () => { if (lockedOn && !overlayOpen()) release(); }, { passive: true, capture: true }));
 const toastEl = d.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); d.body.append(toastEl);
 let toastT;
 const toast = msg => { toastEl.textContent = msg; toastEl.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove("on"), 3200); };

@@ -69,3 +69,8 @@ swipe row, a filterable photo grid, About, Follow (with reels) and Work together
 bottom tab bar (it slides in once you scroll past the hero), a theme sheet and a compact footer.
 Everything reads from the same data.js, so there is nothing extra to edit.
 Desktop and tablet layouts are unchanged.
+
+## Cinema layer
+`assets/css/cinema.css` + `assets/js/cinema.js` add the altimeter (desktop) and altitude chip + route sheet (phones),
+the viewfinder cursor, the Roll 01 contact sheet (red pencil marks = photos listed in `COLLAGE`), hero focus pull, phone tilt,
+tap-to-focus and the ambient trail sound. Everything reads from data.js. Remove the two cinema lines from a page to switch it off.
