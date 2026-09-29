@@ -1,0 +1,63 @@
+/* ═══════════════════════════════════════════════════════════════
+   perf.css — additive. Loads LAST. Changes nothing by default.
+   Three jobs:
+     1. let a visitor turn motion back on when Windows has it off
+     2. let the page drop to a cheap paint path on a slow machine
+     3. stop paying for sections nobody is looking at
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. motion override ───────────────────────────────────────── */
+/* The gating lives in site.css / cinema.css (html:not([data-motion="full"])).
+   All this file has to do is keep a reveal from looking broken when motion
+   is dialled down: fade it, don't slide it. */
+html[data-motion="calm"] .rv,
+html:not([data-motion="full"]) .rv{transform:none!important}
+@media (prefers-reduced-motion:reduce){
+  html:not([data-motion="full"]) .rv{opacity:0;transition:opacity .18s linear!important}
+  html:not([data-motion="full"]) .rv.in{opacity:1}
+}
+html[data-motion="calm"] .rv{opacity:0;transition:opacity .18s linear!important}
+html[data-motion="calm"] .rv.in{opacity:1}
+
+/* ── 2. cheap paint path ──────────────────────────────────────── */
+/* Applied when the visitor picks Calm, or when the browser has no
+   backdrop-filter at all. No guessing about the machine. */
+html[data-motion="calm"]{--lite:1}
+/* Set by perf.js when the machine drops frames, or when the browser
+   has no backdrop-filter at all. Blur on a fixed, full-width bar is
+   the single most expensive thing on the page without a GPU. */
+html.perf-lite .hdr.solid,html[data-motion="calm"] .hdr.solid,
+html.perf-lite .mbar.solid,html[data-motion="calm"] .mbar.solid,
+html.perf-lite .tabs,html[data-motion="calm"] .tabs,
+html.perf-lite .tpop,html[data-motion="calm"] .tpop,
+html.perf-lite .glance > *,html[data-motion="calm"] .glance > *,
+html.perf-lite .ibtn,html[data-motion="calm"] .ibtn,
+html.perf-lite .badge,html[data-motion="calm"] .badge,
+html.perf-lite .bigplay,html[data-motion="calm"] .bigplay,
+html.perf-lite .short__b,html[data-motion="calm"] .short__b,
+html.perf-lite .short__p,html[data-motion="calm"] .short__p,
+html.perf-lite .card .tag,html[data-motion="calm"] .card .tag,
+html.perf-lite .wcard .chip3,html[data-motion="calm"] .wcard .chip3{
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+html.perf-lite .hdr.solid,html[data-motion="calm"] .hdr.solid{background:var(--ink)}
+html.perf-lite .mbar.solid,html[data-motion="calm"] .mbar.solid,html.perf-lite .tabs,html[data-motion="calm"] .tabs{background:var(--ink)}
+html.perf-lite .tpop,html[data-motion="calm"] .tpop,html.perf-lite .glance > *,html[data-motion="calm"] .glance > *{background:var(--ink-2)}
+html.perf-lite .badge,html[data-motion="calm"] .badge,html.perf-lite .short__b,html[data-motion="calm"] .short__b,html.perf-lite .card .tag,html[data-motion="calm"] .card .tag,
+html.perf-lite .wcard .chip3,html[data-motion="calm"] .wcard .chip3{background:rgba(0,0,0,.78)}
+html.perf-lite canvas.wx{display:none}          /* the weather canvas: a full rAF loop */
+html.perf-lite .trek__aurora{display:none}
+html.perf-lite *{box-shadow:none!important}
+html.perf-lite .peek{display:none!important}
+
+/* animations only run while you can see them */
+html.perf-lite .off-view,
+html:not([data-motion="full"]) .off-view{animation-play-state:paused!important}
+
+/* ── the motion switch itself ─────────────────────────────────── */
+.motion-opt{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.motion-opt button{flex:1;font:inherit;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  padding:8px 6px;border-radius:10px;border:1px solid var(--line-2);background:transparent;
+  color:var(--fog-3);cursor:pointer}
+.motion-opt button[aria-pressed="true"]{background:var(--glow);border-color:var(--glow);color:var(--ink)}
+.motion-note{font-size:10.5px;color:var(--fog-3);margin:8px 2px 0;line-height:1.45}

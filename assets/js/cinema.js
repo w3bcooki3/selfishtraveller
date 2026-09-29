@@ -8,7 +8,9 @@
 "use strict";
 const d = document, root = d.documentElement, S = window.ST || {};
 const $ = (s, c = d) => c.querySelector(s), $$ = (s, c = d) => [...c.querySelectorAll(s)];
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* coalesce scroll work into one frame — added for low-power / no-GPU machines */
+const rafThrottle = fn => { let q = false; return function () { if (q) return; q = true; requestAnimationFrame(() => { q = false; fn.apply(this, arguments); }); }; };
+const reduce = (() => { try { const m = localStorage.getItem("st-motion"); if (m === "full") return false; if (m === "calm") return true; } catch (e) {} return matchMedia("(prefers-reduced-motion: reduce)").matches; })();
 const fine = matchMedia("(hover:hover) and (pointer:fine)").matches;
 const isMob = () => (S.mobile ? S.mobile() : innerWidth <= 760);
 const PAGE = d.body.dataset.page || "home";
@@ -62,7 +64,7 @@ function altimeter() {
     bar.style.transform = `scaleX(${p})`;
   };
   place(); upd();
-  addEventListener("scroll", upd, { passive: true });
+  addEventListener("scroll", rafThrottle(upd), { passive: true });
   addEventListener("resize", () => { place(); upd(); });
   addEventListener("load", () => setTimeout(() => { place(); upd(); }, 300));
   S.cinePlace = () => { place(); upd(); };
@@ -140,7 +142,7 @@ function roll() {
   if (swipe) {
     const sc = $(".film-scroll", sec);
     const upd = () => { const max = Math.max(1, sc.scrollWidth - sc.clientWidth); rB.style.width = (sc.scrollLeft / max * 100) + "%"; focus(); };
-    sc.addEventListener("scroll", upd, { passive: true });
+    sc.addEventListener("scroll", rafThrottle(upd), { passive: true });
     new IntersectionObserver(es => { if (es[0].isIntersecting) upd(); }, { threshold: .4 }).observe(sec);
     if (reduce) frames.forEach(f => f.classList.add("drawn"));
     return;
@@ -152,7 +154,7 @@ function roll() {
     film.style.transform = `translate3d(${-p * travel}px,0,0)`; rB.style.width = (p * 100) + "%";
     if (r.top < innerHeight && r.bottom > 0) focus(); };
   size(); upd();
-  addEventListener("scroll", upd, { passive: true });
+  addEventListener("scroll", rafThrottle(upd), { passive: true });
   addEventListener("resize", () => { size(); upd(); });
   $$("img", film).forEach(im => im.complete || im.addEventListener("load", () => { size(); upd(); }, { once: true }));
 }
@@ -169,7 +171,7 @@ function heroPull() {
     if (body) { body.style.transform = `translate3d(0,${-p * 90}px,0)`; body.style.opacity = 1 - p * 1.3; if (!isMob()) body.style.filter = p > .01 ? `blur(${p * 7}px)` : ""; }
     if (foot) foot.style.opacity = 1 - p * 2.2; };
   const kick = () => { if (!ticking) { ticking = true; requestAnimationFrame(upd); } };
-  addEventListener("scroll", kick, { passive: true });
+  addEventListener("scroll", rafThrottle(kick), { passive: true });
   S.heroKick = kick;
   upd();
 }
@@ -317,8 +319,12 @@ function phone() {
   new MutationObserver(sync).observe(d.body, { attributes: true, attributeFilter: ["class"] });
   sync();
   S.sound && S.sound.paint();
-  const lineUpd = () => { const max = Math.max(1, d.documentElement.scrollHeight - innerHeight); if (!d.body.classList.contains("menu-open")) $("i", line).style.transform = `scaleX(${clamp(scrollY / max)})`; };
-  addEventListener("scroll", lineUpd, { passive: true }); lineUpd();
+  let _maxScroll = Math.max(1, d.documentElement.scrollHeight - innerHeight);
+  const _remeasure = () => { _maxScroll = Math.max(1, d.documentElement.scrollHeight - innerHeight); };
+  addEventListener("resize", _remeasure, { passive: true });
+  addEventListener("load", () => setTimeout(_remeasure, 400));
+  const lineUpd = () => { const max = _maxScroll; if (!d.body.classList.contains("menu-open")) $("i", line).style.transform = `scaleX(${clamp(scrollY / max)})`; };
+  addEventListener("scroll", rafThrottle(lineUpd), { passive: true }); lineUpd();
 
   if (!home) return;
   const chip = $(".notch__alt", notch);
@@ -378,7 +384,7 @@ function phone() {
       $$(".route__pins i", sheet).forEach((pin, i) => pin.classList.toggle("past", i <= ci)); }
   };
   measure(); upd();
-  addEventListener("scroll", upd, { passive: true });
+  addEventListener("scroll", rafThrottle(upd), { passive: true });
   addEventListener("load", () => setTimeout(() => { measure(); upd(); }, 400));
   addEventListener("resize", () => { measure(); upd(); });
 }

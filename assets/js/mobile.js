@@ -10,6 +10,8 @@
 const MQ = matchMedia("(max-width:760px), (hover:none) and (pointer:coarse) and (max-height:500px)");
 const d = document, $ = (s, c = d) => c.querySelector(s), $$ = (s, c = d) => [...c.querySelectorAll(s)];
 const S = window.ST; if (!S) return;
+/* coalesce scroll work into one frame — added for low-power / no-GPU machines */
+const rafThrottle = fn => { let q = false; return function () { if (q) return; q = true; requestAnimationFrame(() => { q = false; fn.apply(this, arguments); }); }; };
 const esc = S.esc, PAGE = d.body.dataset.page || "home", HOME = PAGE === "home" ? "" : "index.html";
 S.mobile = () => MQ.matches;
 S.openThemes = () => M.open("themes");
@@ -53,13 +55,13 @@ M.pips = row => {
   p.innerHTML = kids.map(() => "<i></i>").join(""); row.after(p);
   const set = () => { const x = row.scrollLeft + 20; let i = 0; kids.forEach((k, j) => { if (k.offsetLeft - row.offsetLeft - 18 <= x) i = j; });
     if (row.scrollLeft + row.clientWidth >= row.scrollWidth - 4) i = kids.length - 1; [...p.children].forEach((c, j) => c.classList.toggle("on", j === i)); };
-  row.addEventListener("scroll", set, { passive: true }); set();
+  row.addEventListener("scroll", rafThrottle(set), { passive: true }); set();
 };
 M.spy = links => {
   const map = links.map(a => { const h = a.getAttribute("href"), i = h.indexOf("#"); return [a, i > -1 && (i === 0 || HOME === "") ? d.getElementById(h.slice(i + 1)) : null]; }).filter(x => x[1]);
   if (!map.length) return;
   const upd = () => { let cur = map[0]; const y = innerHeight * .35; map.forEach(m => { if (m[1].getBoundingClientRect().top <= y) cur = m; }); map.forEach(m => m[0].classList.toggle("on", m === cur)); };
-  addEventListener("scroll", upd, { passive: true }); upd();
+  addEventListener("scroll", rafThrottle(upd), { passive: true }); upd();
 };
 
 /* ── story viewer (Instagram highlights) ── */
@@ -106,7 +108,7 @@ d.body.append(tabs); d.body.classList.add("has-tabs");
 // Keep the approved hero clean: the tab bar slides in once you scroll past it.
 const hero = $(".hero");
 const tabVis = () => { const past = !hero || hero.getBoundingClientRect().bottom < innerHeight * .6; tabs.classList.toggle("away", !past); };
-tabVis(); addEventListener("scroll", tabVis, { passive: true });
+tabVis(); addEventListener("scroll", rafThrottle(tabVis), { passive: true });
 
 /* ── compact footer (every page) ── */
 const mft = d.createElement("footer"); mft.className = "mft mob-only";

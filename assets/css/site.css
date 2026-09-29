@@ -699,10 +699,14 @@ img{-webkit-user-drag:none;user-select:none}
 }
 @media (hover:none){ .peek{display:none} .tile .cap,.fr .cap{opacity:1;transform:none} .tile::after,.fr::after{opacity:1} }
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
-  .bars::before,.bars::after{display:none}
-  .tk,.leg,.shin,.arm,.pole,.bob,.puff,.bird,.umb{animation:none!important}
+  html:not([data-motion="full"]) *,html:not([data-motion="full"]) *::before,html:not([data-motion="full"]) *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  html:not([data-motion="full"]){scroll-behavior:auto!important}
+  html:not([data-motion="full"]) .bars::before,html:not([data-motion="full"]) .bars::after{display:none}
+  html:not([data-motion="full"]) .tk,html:not([data-motion="full"]) .leg,html:not([data-motion="full"]) .shin,html:not([data-motion="full"]) .arm,html:not([data-motion="full"]) .pole,html:not([data-motion="full"]) .bob,html:not([data-motion="full"]) .puff,html:not([data-motion="full"]) .bird,html:not([data-motion="full"]) .umb{animation:none!important}
 }
+html[data-motion="calm"] *,html[data-motion="calm"] *::before,html[data-motion="calm"] *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+html[data-motion="calm"]{scroll-behavior:auto!important}
+html[data-motion="calm"] .bars::before,html[data-motion="calm"] .bars::after{display:none}
 
 /* ── refinements ── */
 .ft__mail svg{width:.75em;height:.75em;flex:none}

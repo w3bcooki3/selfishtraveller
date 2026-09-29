@@ -6,8 +6,10 @@
 "use strict";
 const d = document, root = d.documentElement;
 root.classList.add("js");
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reduce = (() => { try { const m = localStorage.getItem("st-motion"); if (m === "full") return false; if (m === "calm") return true; } catch (e) {} return matchMedia("(prefers-reduced-motion: reduce)").matches; })();
 const $ = (s, c = d) => c.querySelector(s);
+/* coalesce scroll work into one frame — added for low-power / no-GPU machines */
+const rafThrottle = fn => { let q = false; return function () { if (q) return; q = true; requestAnimationFrame(() => { q = false; fn.apply(this, arguments); }); }; };
 const $$ = (s, c = d) => [...c.querySelectorAll(s)];
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const PAGE = d.body.dataset.page || "home";
@@ -189,7 +191,7 @@ if (hdr) {
   $$(".sheet ol a").forEach(a => a.addEventListener("click", () => menu(false)));
   addEventListener("keydown", e => { if (e.key === "Escape") { menu(false); pop(false); } });
   const solid = () => hdr.classList.toggle("solid", scrollY > 40);
-  solid(); addEventListener("scroll", solid, { passive: true });
+  solid(); addEventListener("scroll", rafThrottle(solid), { passive: true });
 }
 
 // left social rail
@@ -473,7 +475,7 @@ function renderCollage(el) {
   const ps = $$(".collage__p", el);
   const par = () => { if (innerWidth <= 900) return; const r = el.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
     const k = (r.top + r.height / 2 - innerHeight / 2); ps.forEach(p => p.style.setProperty("--py", (k * -+p.dataset.depth * .35).toFixed(1) + "px")); };
-  addEventListener("scroll", par, { passive: true }); par();
+  addEventListener("scroll", rafThrottle(par), { passive: true }); par();
 }
 
 /* page hero: slides + timecode + canvas */
@@ -550,7 +552,7 @@ function home() {
     const wrapW = node => [...node.childNodes].forEach(n => { if (n.nodeType === 3) { const f = d.createDocumentFragment(); n.textContent.split(/(\s+)/).forEach(w => { if (!w) return; if (/^\s+$/.test(w)) f.append(w); else { const s = d.createElement("span"); s.className = "w"; s.textContent = w; f.append(s); } }); n.replaceWith(f); } else wrapW(n); });
     wrapW(st); const words = $$(".w", st);
     const light = () => { const r = st.getBoundingClientRect(), p = Math.min(1, Math.max(0, (innerHeight * .85 - r.top) / (r.height + innerHeight * .35))); const n = Math.round(p * words.length); words.forEach((w, i) => w.classList.toggle("lit", i < n)); };
-    if (reduce) words.forEach(w => w.classList.add("lit")); else { light(); addEventListener("scroll", light, { passive: true }); }
+    if (reduce) words.forEach(w => w.classList.add("lit")); else { light(); addEventListener("scroll", rafThrottle(light), { passive: true }); }
   }
 
   renderCollage($("#collage"));
