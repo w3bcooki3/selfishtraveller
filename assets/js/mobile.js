@@ -67,7 +67,7 @@ M.spy = links => {
 /* ── story viewer (Instagram highlights) ── */
 const sv = d.createElement("div"); sv.className = "sv fx"; sv.setAttribute("role", "dialog"); sv.setAttribute("aria-label", "Stories");
 sv.innerHTML = `<div class="sv__img"><img alt=""></div><div class="sv__bars"></div>
-  <div class="sv__who"><span class="ph"><img src="${S.IMG("u:filmer", 120, "1/1")}" alt=""></span><b>${esc(INSTAGRAM.handle)}</b><span class="sv__lab"></span><button class="x" aria-label="Close stories">✕</button></div>
+  <div class="sv__who"><span class="ph"><img src="${S.IMG("l:the-filmer", 120, "1/1")}" alt=""></span><b>${esc(INSTAGRAM.handle)}</b><span class="sv__lab"></span><button class="x" aria-label="Close stories">✕</button></div>
   <button class="sv__tap sv__tap--p" aria-label="Previous"></button><button class="sv__tap sv__tap--n" aria-label="Next"></button>
   <div class="sv__cap"><b></b><span></span></div>
   <div class="sv__cta"><a class="btn btn--light" target="_blank" rel="noopener">${S.icon("instagram")} Watch on Instagram</a></div>`;
@@ -156,7 +156,7 @@ function home() {
 
   <section class="msec" style="padding-top:26px" id="instagram" aria-label="Instagram highlights">
     <div class="m-rings">
-      <a class="m-ring me" href="${esc(INSTAGRAM.url)}" target="_blank" rel="noopener"><span class="o"><span class="ph" style="display:block"><img src="${S.IMG("u:filmer", 160, "1/1")}" alt=""></span></span>Follow</a>
+      <a class="m-ring me" href="${esc(INSTAGRAM.url)}" target="_blank" rel="noopener"><span class="o"><span class="ph" style="display:block"><img src="${S.IMG("l:the-filmer", 160, "1/1")}" alt=""></span></span>Follow</a>
       ${INSTAGRAM.highlights.map((h, i) => `<button class="m-ring" data-story="${i}"><span class="o"><span class="ph" style="display:block"><img src="${S.IMG(h.img, 160, "1/1")}" alt="" loading="lazy"></span></span>${esc(h.label)}</button>`).join("")}
     </div>
   </section>
@@ -190,7 +190,7 @@ function home() {
   <section class="msec" id="about">
     <div class="mhead"><div><span class="k">04 · About</span><h2>Behind <em>the lens</em></h2></div></div>
     <div class="about">
-      <div class="about__me"><span class="ph"><img src="${S.IMG("u:filmer", 200, "1/1")}" alt="${esc(SITE.creator)} (stand-in photo)"></span><div><b>${esc(SITE.creator)}</b><span>Solo filmmaker, trekker &amp; wildlife photographer · BC</span></div></div>
+      <div class="about__me"><span class="ph"><img src="${S.IMG("l:the-filmer", 200, "1/1")}" alt="${esc(SITE.creator)}"></span><div><b>${esc(SITE.creator)}</b><span>Solo filmmaker, trekker &amp; wildlife photographer · BC</span></div></div>
       <blockquote>I go out for myself first. The film is what's left over — <em>the cold mornings and the animals that never cared I was there.</em></blockquote>
       <div class="tenet"><i>1</i><div><b>One person, one pack</b><span>No crew. Every frame carried in and shot alone.</span></div></div>
       <div class="tenet"><i>✦</i><div><b>Nothing staged</b><span>When the weather wins, that's the story.</span></div></div>
@@ -209,7 +209,7 @@ function home() {
 
   <section class="msec" id="collab" style="padding-bottom:44px">
     <div class="collab2">
-      <div class="ph"><img src="${S.IMG("u:tent2", 900, "4/5")}" alt="" loading="lazy"></div>
+      <div class="ph"><img src="${S.IMG("l:tents-night", 900, "4/5")}" alt="" loading="lazy"></div>
       <span class="mono" style="color:var(--glow);font-size:11px">Work together</span>
       <h2>Take your audience <em>somewhere real.</em></h2>
       <p>Films, photography and social content for outdoor brands, tourism boards and lodges.</p>

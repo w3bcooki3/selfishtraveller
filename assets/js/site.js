@@ -18,9 +18,29 @@ const YEAR = new Date().getFullYear();
 const HOME = PAGE === "home" ? "" : "index.html";
 
 /* ───────── images ───────── */
+/* Aman's own photos live in assets/photos/ as <slug>-<width>.webp, built at
+   these four widths. "l:aspen-aerial" resolves to whichever one the screen
+   actually needs, so a phone never downloads a 2560px file.
+   A frame shot smaller than 2560 simply has fewer rungs; LOCAL_CAP records
+   the largest that exists so we never link to a file that was never made. */
+const LOCAL_W = [640, 1280, 1920, 2560];
+const LOCAL_CAP = { "two-bears": 1280 };
+const localSrc = (slug, w) => {
+  const cap = LOCAL_CAP[slug] || 2560;
+  const pick = LOCAL_W.find(x => x >= w && x <= cap) || Math.min(cap, LOCAL_W[LOCAL_W.length - 1]);
+  return `assets/photos/${slug}-${pick}.webp`;
+};
+/* Real srcset, so the browser re-picks on resize, rotate or a zoom change
+   instead of being stuck with whatever width was right when we rendered. */
+const SRCSET = src => {
+  if (!src || !src.startsWith("l:")) return "";
+  const slug = src.slice(2), cap = LOCAL_CAP[slug] || 2560;
+  return LOCAL_W.filter(x => x <= cap).map(x => `assets/photos/${slug}-${x}.webp ${x}w`).join(", ");
+};
 const IMG = (src, w = 1600, ratio) => {
   if (!src) return "";
   w = Math.min(w, Math.max(400, Math.ceil(innerWidth * Math.min(devicePixelRatio || 1, 2) / 200) * 200));
+  if (src.startsWith("l:")) return localSrc(src.slice(2), w);
   if (src.startsWith("u:")) {
     const id = STOCK[src.slice(2)];
     let h = "";
@@ -451,19 +471,47 @@ d.addEventListener("click", e => {
   $(".vm__t", vm).textContent = a.dataset.title || "";
   vm.classList.add("open"); lock(true); $(".lb__x", vm).focus();
 });
+d.addEventListener("click", e => {
+  const a = e.target.closest("[data-clip]"); if (!a) return;
+  e.preventDefault();
+  const box = $(".vm__box", vm);
+  box.classList.toggle("v", a.dataset.vertical === "1");
+  // controls + the browser's own fullscreen button; loop because these are
+  // short pieces of B-roll, not films with an ending.
+  box.innerHTML = `<video src="${esc(a.dataset.clip)}" poster="${esc(a.dataset.poster || "")}" controls autoplay loop playsinline preload="metadata"></video>`;
+  $(".vm__t", vm).textContent = a.dataset.title || "";
+  vm.classList.add("open"); lock(true); $(".lb__x", vm).focus();
+});
 const videoAttrs = (url, title, vertical) => `href="${esc(url)}" target="_blank" rel="noopener" data-video="${esc(url)}" data-title="${esc(title)}"${vertical ? ' data-vertical="1"' : ""}`;
 
 /* ═══════════════ SHARED RENDERERS ═══════════════ */
 const shortCard = s => { const id = ytId(s.url); return `<a class="short rv" ${videoAttrs(s.url, s.title, true)} aria-label="Play short: ${esc(s.title)}"><img src="${ytThumb(id, true)}" alt="" loading="lazy"><span class="short__b mono">${icon("youtube")} Short</span><span class="short__p">${playSvg}</span><span class="short__t">${esc(s.title)}</span></a>`; };
 const moreCard = () => `<div class="more-card rv"><span class="mono" style="color:var(--glow)">New every few weeks</span><h4>More trails.<br><em>More fails.</em></h4><p>Shorts land on YouTube first — straight from the trail, before the long edit is done.</p><a class="btn btn--light" href="${esc((SOCIAL.find(s => s.key === "youtube") || {}).url || "#")}/shorts" target="_blank" rel="noopener">${icon("youtube")} All shorts</a></div>`;
-const tile = (p, group, w = 900) => `<button class="ph tile rv" style="--ar:${p.ratio}" data-photo="${p.id}" data-group="${group}" data-cat="${esc(p.cat)}" aria-label="Open photograph: ${esc(p.title)}"><img src="${IMG(p.img, w, p.ratio)}" alt="${esc(p.alt)}" loading="lazy"><span class="wm">© ${esc(SITE.creator)}</span><span class="cap"><b>${esc(p.title)}</b><span>${esc(p.location)} · ${esc(p.cat)}</span></span></button>`;
+const tile = (p, group, w = 900) => `<button class="ph tile rv" style="--ar:${p.ratio}" data-photo="${p.id}" data-group="${group}" data-cat="${esc(p.cat)}" aria-label="Open photograph: ${esc(p.title)}"><img src="${IMG(p.img, w, p.ratio)}"${SRCSET(p.img) ? ` srcset="${SRCSET(p.img)}" sizes="(max-width:700px) 47vw, (max-width:1100px) 46vw, 31vw"` : ""} alt="${esc(p.alt)}" loading="lazy" decoding="async"><span class="wm">© ${esc(SITE.creator)}</span><span class="cap"><b>${esc(p.title)}</b><span>${esc(p.location)} · ${esc(p.cat)}</span></span></button>`;
+
+const clipCard = c => `<button class="clip rv${c.vertical ? " clip--v" : ""}" style="--ar:${c.vertical ? "4/5" : "16/9"}" data-clip="${esc(c.file)}" data-poster="${esc(c.poster)}" data-title="${esc(c.title)}"${c.vertical ? ' data-vertical="1"' : ""} aria-label="Play clip: ${esc(c.title)}">
+    <span class="ph" style="display:block"><img src="${esc(c.poster)}" alt="${esc(c.alt || "")}" loading="lazy" decoding="async"></span>
+    <span class="clip__p">${playSvg}</span>
+    <span class="clip__t"><b>${esc(c.title)}</b><span class="mono">${esc(c.location)}${c.date ? " · " + fmtDate(c.date) : ""}</span></span>
+  </button>`;
+
+function mountClips(el) {
+  if (!el || typeof CLIPS === "undefined") return;
+  // The note sits in the grid rather than under it, so the terms are next to
+  // the thing they apply to instead of in small print somewhere further down.
+  el.innerHTML = CLIPS.map(clipCard).join("") + `<div class="clip-note rv">
+      <b>Using this footage?</b>
+      <p>Every clip here is © ${esc(SITE.creator)}. Happy to license it for film, tourism or brand work — tell me which clip and where it would run.</p>
+      <a class="link" data-mail href="mailto:${esc(SITE.email)}">Ask about a clip <span>→</span></a>
+    </div>`;
+}
 
 function renderCollage(el) {
   if (!el) return;
-  const prints = COLLAGE.map(c => { const p = photo(c.id); if (!p) return ""; const ar = p.ratio === "4/5" ? "4/5" : p.ratio === "16/9" ? "16/9" : "4/3";
+  const prints = COLLAGE.map(c => { const p = photo(c.id); if (!p) return ""; const ar = p.ratio === "4/5" ? "4/5" : p.ratio === "3/4" ? "3/4" : p.ratio === "16/9" ? "16/9" : "4/3";
     return `<button class="collage__p" data-photo="${p.id}" data-group="collage" data-depth="${c.d}" style="left:${c.l}%;top:${c.t}%;width:${c.w}%;--rot:${c.rot}deg;--ar:${ar}" aria-label="Open photograph: ${esc(p.title)}">
       <span class="ph" style="display:block"><img src="${IMG(p.img, 900, ar === "4/3" ? "4/3" : ar)}" alt="${esc(p.alt)}" loading="lazy"></span><span class="collage__cap"><span>${esc(p.title)}</span><span>${esc(p.location.split(",")[0])}</span></span></button>`; }).join("");
-  el.innerHTML = `<div class="collage__bg"><img src="${IMG("u:clouds", 1600)}" alt="" loading="lazy"></div>
+  el.innerHTML = `<div class="collage__bg"><img src="${IMG("l:tundra-peak", 1600)}" alt="" loading="lazy"></div>
     <div class="collage__stage">
       <div class="collage__tl rv"><span class="mono" style="color:var(--glow)">The keepers</span><h2>The frames I'd <em style="color:var(--glow-2)">hang on a wall.</em></h2></div>
       <div class="collage__word" aria-hidden="true">Keepers</div>
@@ -563,7 +611,7 @@ function home() {
     const I = INSTAGRAM;
     ig.innerHTML = `
       <div class="ig__top rv">
-        <div class="ig__me"><span class="ig__av"><span class="ph" style="display:block"><img src="${IMG("u:filmer", 200, "1/1")}" alt=""></span></span><div><b>${esc(I.handle)}</b><span>${esc(SITE.creator)} · Solo traveller · BC</span></div></div>
+        <div class="ig__me"><span class="ig__av"><span class="ph" style="display:block"><img src="${IMG("l:the-filmer", 200, "1/1")}" alt=""></span></span><div><b>${esc(I.handle)}</b><span>${esc(SITE.creator)} · Solo traveller · BC</span></div></div>
         <a class="btn btn--light" href="${esc(I.url)}" target="_blank" rel="noopener">${icon("instagram")} Follow on Instagram</a>
       </div>
       <div class="rings rv" aria-label="Story highlights">${I.highlights.map(h => `<a class="ring" href="${esc(h.url || I.url)}" target="_blank" rel="noopener"><span class="o"><span class="ph" style="display:block"><img src="${IMG(h.img, 200, "1/1")}" alt="" loading="lazy"></span></span>${esc(h.label)}</a>`).join("")}</div>
@@ -595,7 +643,7 @@ function home() {
 
 /* ═══════════════ FILMS PAGE ═══════════════ */
 function films() {
-  mountHero($(".hero"), () => [["u:camfog", "Camera on the ridge, in the cloud"], ["u:filmer", "Filming the last light"]]);
+  mountHero($(".hero"), () => [["l:the-filmer", "Filming the last light"], ["l:autumn-road", "The road through it"]]);
   const feat = FILMS.find(f => f.featured) || FILMS[0];
   const pl = $("#player");
   if (pl && feat) { const id = ytId(feat.url);
@@ -618,7 +666,7 @@ function films() {
 
 /* ═══════════════ PHOTOGRAPHY PAGE ═══════════════ */
 function photography() {
-  mountHero($(".hero"), () => [["u:clouds", "Above the inversion"], ["u:bear", "Salmon run"], ["u:tent", "Camp, 2100 m"]]);
+  mountHero($(".hero"), () => [["l:aspen-aerial", "Gold from above"], ["l:waterfall", "Kinuseo, full volume"], ["l:aurora-treeline", "Green over the spruce"]]);
   renderCollage($("#collage"));
   const g = $("#gallery"), chips = $("#pchips"), count = $("#pcount");
   if (!g) return;
@@ -633,7 +681,7 @@ function photography() {
 
 d.addEventListener("click", e => { const b = e.target.closest("[data-theme-opt]"); if (!b) return; setTheme(b.dataset.themeOpt); const tp = $("#tpop"); if (tp) tp.classList.remove("open"); });
 window.ST = { IMG, ytId, ytThumb, icon, ICONS, TICONS, SWATCH, BRAND, esc, toast, setTheme, onTheme, resolved, applyTheme, lock,
-  lbOpen, weatherOn, mountTrek, mountHero, videoAttrs, photo, socialHref, shortCard, tile, renderCollage, playSvg, fmtDate, TREK_CAP,
+  lbOpen, weatherOn, mountTrek, mountHero, videoAttrs, photo, socialHref, shortCard, tile, renderCollage, mountClips, clipCard, playSvg, fmtDate, TREK_CAP,
   get live() { return live; } };
 /* ═══════════════ BOOT ═══════════════ */
 applyTheme();
@@ -645,6 +693,7 @@ $$("[data-photo][data-fill]").forEach(el => { const p = photo(el.dataset.photo);
 $$("[data-photo] [data-photo-img]").forEach(el => { const p = photo(el.closest("[data-photo]").dataset.photo); if (p) el.insertAdjacentHTML("afterbegin", `<img src="${IMG(p.img, 700, "3/4")}" alt="${esc(p.alt)}" loading="lazy">`); });
 $$("[data-mail]").forEach(a => a.href = "mailto:" + SITE.email);
 if (PAGE === "home") home(); else if (PAGE === "films") films(); else if (PAGE === "photography") photography();
+mountClips($("#clips"));   // any page that has the slot
 $$(".trek-slot").forEach(mountTrek);
 fetchLive();
 

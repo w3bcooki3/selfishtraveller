@@ -761,3 +761,42 @@ main,.ft{overflow-x:clip}
   #fchips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
 }
 @media (max-width:640px){ .hdr .brand__txt span{display:none} .hdr__in{gap:12px} }
+
+/* ═══════════════ CLIPS (Aman's own footage) ═══════════════
+   Posters only until someone presses play, so the page weighs a few hundred
+   KB instead of fifteen megabytes. auto-fit means the column count follows
+   the screen with no breakpoint list to maintain; align-items:start lets the
+   vertical clip be taller than the landscape ones instead of stretching them. */
+.clips{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+/* The vertical clip spans two rows so the landscape ones and the usage note
+   fill the space beside it, instead of leaving a hole the width of the page. */
+@media (min-width:700px){
+  .clips{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .clip--v{grid-row:span 2;align-self:stretch}
+  .clip--v .ph{height:100%;aspect-ratio:auto}
+}
+@media (min-width:1040px){ .clips{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.clip{position:relative;display:block;width:100%;border-radius:8px;overflow:hidden;cursor:pointer;text-align:left;background:var(--ink-2)}
+.clip .ph{aspect-ratio:var(--ar,16/9)}
+.clip img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease),filter .5s}
+.clip::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.82),rgba(0,0,0,.14) 52%,transparent);pointer-events:none}
+.clip:hover img,.clip:focus-visible img{transform:scale(1.04);filter:brightness(.92)}
+.clip__p{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);z-index:2;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:rgba(10,12,12,.55);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(6px);color:#fff;transition:.4s var(--ease)}
+.clip__p svg{width:13px;height:13px;margin-left:2px;fill:#fff}
+.clip:hover .clip__p,.clip:focus-visible .clip__p{background:var(--glow,rgba(255,255,255,.2));transform:translate(-50%,-50%) scale(1.08)}
+@media (min-width:700px){ .clip-note{grid-column:auto} }
+.clip__t{position:absolute;left:16px;right:16px;bottom:14px;z-index:2;color:#fff}
+.clip__t b{display:block;font-family:var(--serif);font-weight:400;font-size:23px;line-height:1.15}
+.clip__t span{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.78}
+.clip-note{align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:24px;border-radius:8px;border:1px solid var(--line,rgba(255,255,255,.14));background:var(--ink-2)}
+.clip-note b{font-family:var(--serif);font-weight:400;font-size:23px}
+.clip-note p{margin:0;color:var(--fog-2);font-size:14.5px;line-height:1.55}
+.vm__box video{width:100%;height:100%;border:0;display:block;object-fit:contain;background:#000}
+@media (max-width:700px){
+  .clips{grid-template-columns:1fr;gap:12px}
+  .clip__t b{font-size:19px}
+  .clip-note{padding:20px}
+}
+/* inline link inside body copy (used in the licensing note) */
+.link-in{color:var(--glow);border-bottom:1px solid currentColor;text-decoration:none}
+.link-in:hover{opacity:.78}

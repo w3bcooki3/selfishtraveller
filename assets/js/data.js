@@ -17,7 +17,9 @@ const SITE = {
   creator: "Aman Saini",
   base: "British Columbia, Canada",
   coords: "49.2827° N · 123.1207° W",
-  email: "hello@example.com",            // ← [REPLACE with the real email]
+  // ⚠ THIS IS THE ONE THING STILL TO FILL IN. Every "ask about a photo",
+  //   "ask about a clip" and licensing button on the site sends mail here.
+  email: "hello@example.com",            // ← REPLACE with the real address
   mediaKit: "",                           // ← link to a PDF media kit (optional)
   copyrightStart: 2024,
   // Weather used by the "Live BC" theme (Vancouver by default)
@@ -50,12 +52,12 @@ const THEMES = [
   { key:"live",   name:"Live BC", note:"Matches the sky in BC right now" }
 ];
 const THEME_HERO = {
-  dusk:   [["u:ridge","Ridge walk, Coast Mountains"],["u:clouds","Above the inversion, first light"],["u:peak","North face, blue hour"]],
-  sun:    [["u:sunsethiker","Last light, alone on the ridge"],["u:inversion","Sea of cloud, 6:12 a.m."],["u:turquoise","Glacier lake, midday"]],
-  rain:   [["u:forestfog","Rain, holding — Great Bear Rainforest"],["u:mist","Cloud in the cedars"],["u:fog","Weather coming in"]],
-  wind:   [["u:jagged","Spindrift on the Coast Range"],["u:valley","Cloud pouring through the pass"],["u:range","Exposed ridge, 40 km/h"]],
-  forest: [["u:lake2","Lake in the pines"],["u:pines","Old growth, Interior BC"],["u:river","Meltwater through the forest"]],
-  night:  [["u:tent","Camp under star trails"],["u:tent2","Lights out, 2100 m"],["u:peak","Moonlit north face"]]
+  dusk:   [["l:aspen-aerial","Gold from above, Monkman"],["l:tundra-peak","Above the treeline, Stone Mountain"],["l:snow-face","The cold side"]],
+  sun:    [["l:autumn-road","The road through it"],["l:wildflowers","Six weeks of this, Hart Ranges"],["l:blue-tarn","Meltwater blue"]],
+  rain:   [["l:waterfall","Kinuseo, full volume"],["l:alpine-basin","Last of the snow"],["l:green-river","Glacier run-off"]],
+  wind:   [["l:snow-face","The cold side"],["l:tundra-peak","Open ground, Stone Mountain"],["l:alpine-basin","Last of the snow"]],
+  forest: [["l:green-river","Glacier run-off"],["l:autumn-road","The road through it"],["l:wildflowers","Six weeks of this"]],
+  night:  [["l:aurora-treeline","Green over the spruce"],["l:tents-night","Two tents, no one else"],["l:aurora-pointing","Look up"]]
 };
 
 /* ── FILMS (long YouTube uploads) ────────────────────────────────────
@@ -70,9 +72,9 @@ const FILMS = [
 ];
 /* Films being edited. Shown as "Coming soon" cards. [SAMPLE — replace] */
 const IN_THE_EDIT = [
-  { title:"Above the inversion", location:"Coast Mountains, BC", img:"u:inversion", eta:"Autumn" },
-  { title:"Grizzly season", location:"Central Coast, BC", img:"u:bear", eta:"Winter" },
-  { title:"Silt & ice", location:"Canadian Rockies", img:"u:moraine", eta:"2027" }
+  { title:"Above the inversion", location:"Coast Mountains, BC", img:"l:tundra-peak", eta:"Autumn" },
+  { title:"Grizzly season", location:"Central Coast, BC", img:"l:two-bears", eta:"Winter" },
+  { title:"Silt & ice", location:"Canadian Rockies", img:"l:blue-tarn", eta:"2027" }
 ];
 
 /* ── SHORTS ──────────────────────────────────────────────────────────  */
@@ -82,41 +84,70 @@ const SHORTS = [
 ];
 
 /* ── PHOTOGRAPHS ─────────────────────────────────────────────────────
-   ratio: "3/2" landscape · "4/5" portrait · "1/1" square · "16/9" wide  */
+   These are Aman's own frames, in assets/photos/.
+
+   img:"l:slug" means a local photo. The site picks the right file size
+   for the screen automatically — see assets/photos/ for the widths.
+
+   WHERE THE DETAIL CAME FROM
+   Locations are the GPS written into the originals by the camera, matched
+   to the nearest named place. EXIF (focal length is 35mm-equivalent,
+   aperture, shutter, ISO) is read straight off the files.
+   Six frames arrived with their metadata stripped (they'd been sent
+   through a messaging app), so they carry a region only — fill those in
+   if you want them precise.
+
+   ratio: how the frame is CROPPED in the grid. The lightbox always shows
+   the whole photo, so a crop here never loses anything permanently.
+   "3/2" landscape · "4/5" portrait · "3/4" tall · "16/9" wide            */
 const PHOTOS = [
-  { id:"p01", img:"u:ridge",       title:"Ridge walk",             location:"Coast Mountains, BC",   date:"2025-10", cat:"Adventure", ratio:"4/5", exif:"35mm · f/8 · 1/500 · ISO 100", alt:"A lone hiker walking a rocky ridge above a valley" },
-  { id:"p02", img:"u:clouds",      title:"Above the inversion",    location:"Coast Mountains, BC",   date:"2025-02", cat:"Mountains", ratio:"3/2", exif:"70mm · f/11 · 1/800 · ISO 64", alt:"Snowy peaks rising above a sea of cloud at sunrise" },
-  { id:"p03", img:"u:bear",        title:"Salmon run",             location:"Central Coast, BC",     date:"2025-09", cat:"Wildlife",  ratio:"3/2", exif:"400mm · f/5.6 · 1/1000 · ISO 800", alt:"A grizzly bear wading across a river" },
-  { id:"p04", img:"u:lake",        title:"Standing water",         location:"Canadian Rockies",      date:"2025-06", cat:"Water",     ratio:"4/5", exif:"24mm · f/9 · 1/250 · ISO 100", alt:"A turquoise lake below forested peaks" },
-  { id:"p05", img:"u:tent",        title:"Camp, 2100 m",           location:"Coast Mountains, BC",   date:"2024-07", cat:"Night",     ratio:"3/2", exif:"20mm · f/2.8 · 20s × 180 · ISO 1600", alt:"A glowing tent beneath circular star trails" },
-  { id:"p06", img:"u:goat",        title:"First snow",             location:"Coast Range, BC",       date:"2024-10", cat:"Wildlife",  ratio:"4/5", exif:"300mm · f/5.6 · 1/1250 · ISO 400", alt:"A mountain goat standing on a snowy ridge" },
-  { id:"p07", img:"u:forestfog",   title:"Rain, holding",          location:"Great Bear Rainforest", date:"2024-11", cat:"Forest",    ratio:"4/5", exif:"35mm · f/4 · 1/125 · ISO 400", alt:"Fog drifting through dark conifers" },
-  { id:"p08", img:"u:jagged",      title:"Second light",           location:"Coast Range, BC",       date:"2025-01", cat:"Mountains", ratio:"3/2", exif:"105mm · f/8 · 1/400 · ISO 100", alt:"Jagged snowy peaks under heavy cloud" },
-  { id:"p09", img:"u:eagle",       title:"Low tide",               location:"Vancouver Island, BC",  date:"2024-12", cat:"Wildlife",  ratio:"3/2", exif:"500mm · f/6.3 · 1/2000 · ISO 640", alt:"A bald eagle banking in flight" },
-  { id:"p10", img:"u:river",       title:"Meltwater",              location:"Interior BC",           date:"2025-05", cat:"Forest",    ratio:"4/5", exif:"24mm · f/11 · 1/4 · ISO 50", alt:"A river running through misty forest" },
-  { id:"p11", img:"u:turquoise",   title:"Glacier blue",           location:"Canadian Rockies",      date:"2025-07", cat:"Water",     ratio:"3/2", exif:"28mm · f/8 · 1/320 · ISO 100", alt:"A vivid turquoise lake beneath limestone peaks" },
-  { id:"p12", img:"u:wolf",        title:"The one that looked back",location:"Interior BC",          date:"2024-02", cat:"Wildlife",  ratio:"4/5", exif:"400mm · f/4 · 1/800 · ISO 1250", alt:"A grey wolf looking straight at the camera" },
-  { id:"p13", img:"u:valley",      title:"Weather coming in",      location:"Pacific Northwest",     date:"2024-10", cat:"Mountains", ratio:"16/9", exif:"50mm · f/8 · 1/500 · ISO 100", alt:"Cloud filling a snowy valley" },
-  { id:"p14", img:"u:tent2",       title:"Lights out",             location:"Chilcotin, BC",         date:"2024-08", cat:"Night",     ratio:"4/5", exif:"16mm · f/2.8 · 15s · ISO 3200", alt:"A tent glowing orange under the stars" },
-  { id:"p15", img:"u:sunsethiker", title:"Last light, alone",      location:"Coast Mountains, BC",   date:"2025-08", cat:"Adventure", ratio:"4/5", exif:"85mm · f/4 · 1/1000 · ISO 100", alt:"A silhouetted hiker on a summit at sunset" },
-  { id:"p16", img:"u:pines",       title:"Pines in cloud",         location:"Interior BC",           date:"2024-09", cat:"Forest",    ratio:"3/2", exif:"70mm · f/5.6 · 1/250 · ISO 200", alt:"Pine-covered hills disappearing into fog" },
-  { id:"p17", img:"u:moraine",     title:"Silt & ice",             location:"Canadian Rockies",      date:"2024-06", cat:"Water",     ratio:"3/2", exif:"24mm · f/11 · 1/160 · ISO 100", alt:"Snowy peaks above a rocky glacial lake" },
-  { id:"p18", img:"u:goat2",       title:"On the ledge",           location:"Coast Range, BC",       date:"2025-08", cat:"Wildlife",  ratio:"3/2", exif:"200mm · f/5 · 1/1600 · ISO 250", alt:"A mountain goat on a grassy mountain ledge" },
-  { id:"p19", img:"u:mist",        title:"Cloud in the cedars",    location:"Sea to Sky, BC",        date:"2025-03", cat:"Forest",    ratio:"4/5", exif:"50mm · f/5.6 · 1/200 · ISO 200", alt:"Mist rolling over a steep forested slope" },
-  { id:"p20", img:"u:inversion",   title:"Blue layers",            location:"Coast Mountains, BC",   date:"2025-02", cat:"Mountains", ratio:"3/2", exif:"135mm · f/8 · 1/640 · ISO 100", alt:"Layered blue ridges above a valley of cloud" },
-  { id:"p21", img:"u:hikerback",   title:"The long approach",      location:"Canadian Rockies",      date:"2024-07", cat:"Adventure", ratio:"4/5", exif:"35mm · f/5.6 · 1/400 · ISO 200", alt:"A hiker with a large pack walking through forest" },
-  { id:"p23", img:"u:bearface",    title:"Berry season",           location:"Northern BC",           date:"2025-08", cat:"Wildlife",  ratio:"4/5", exif:"500mm · f/5.6 · 1/640 · ISO 1000", alt:"Close portrait of a brown bear in the forest" },
-  { id:"p22", img:"u:peak",        title:"North face, blue hour",  location:"Coast Mountains, BC",   date:"2025-01", cat:"Night",     ratio:"3/2", exif:"50mm · f/4 · 1/15 · ISO 800", alt:"A dark snowy peak under a deep blue sky" }
+  { id:"p01", img:"l:aspen-aerial",    title:"Gold, from above",        location:"Monkman Provincial Park, BC", date:"2026-09", cat:"Aerial",    ratio:"3/2",  exif:"24mm · f/1.7 · 1/350 · ISO 200",   alt:"Aerial view over a hillside of golden aspen in full autumn colour" },
+  { id:"p02", img:"l:autumn-road",     title:"The road through it",     location:"Monkman Provincial Park, BC", date:"2026-09", cat:"Aerial",    ratio:"4/5",  exif:"24mm · f/1.7 · 1/320 · ISO 200",   alt:"A road seen from the air, cutting through autumn forest" },
+  { id:"p03", img:"l:tundra-peak",     title:"Above the treeline",      location:"Stone Mountain Provincial Park, BC", date:"2026-09", cat:"Mountains", ratio:"16/9", exif:"14mm · f/2.2 · 1/720 · ISO 16", alt:"A snow-streaked peak rising over open alpine tundra" },
+  { id:"p04", img:"l:blue-tarn",       title:"Meltwater blue",          location:"Stone Mountain Provincial Park, BC", date:"2026-09", cat:"Water",     ratio:"3/2",  exif:"35mm · f/1.8 · 1/210 · ISO 50", alt:"A bright blue alpine tarn held in a bowl of rock and tundra" },
+  { id:"p05", img:"l:waterfall",       title:"Kinuseo",                 location:"Kinuseo Falls, Monkman Provincial Park, BC", date:"2026-08", cat:"Water", ratio:"4/5", exif:"35mm · f/1.8 · 1/100 · ISO 100", alt:"A wide waterfall dropping over a dark rock shelf into white water" },
+  { id:"p06", img:"l:alpine-basin",    title:"Last of the snow",        location:"British Columbia",            date:"2026-08", cat:"Mountains", ratio:"3/2",  exif:"",  alt:"An alpine basin with patches of snow lingering between rock and scree" },
+  { id:"p07", img:"l:snow-face",       title:"The cold side",           location:"British Columbia",            date:"2026-09", cat:"Mountains", ratio:"3/2",  exif:"",  alt:"A steep snow-covered mountain face under flat cloud" },
+  { id:"p08", img:"l:green-river",     title:"Glacier run-off",         location:"British Columbia",            date:"2026-08", cat:"Water",     ratio:"4/5",  exif:"",  alt:"A turquoise river winding through dense green forest" },
+  { id:"p09", img:"l:ridge-rest",      title:"Sitting with it",         location:"British Columbia",            date:"2026-08", cat:"Adventure", ratio:"4/5",  exif:"",  alt:"A hiker sitting on a rock outcrop looking out at mountains" },
+  { id:"p10", img:"l:the-filmer",      title:"Working",                 location:"British Columbia",            date:"2026-10", cat:"Adventure", ratio:"3/2",  exif:"",  alt:"A hiker in a cap on an autumn alpine trail, camera in hand" },
+  { id:"p11", img:"l:deer",            title:"Held still",              location:"Fort St. John, BC",           date:"2026-10", cat:"Wildlife",  ratio:"3/4",  exif:"229mm · f/2.8 · 1/120 · ISO 50", alt:"A deer standing among bare trees, looking toward the camera" },
+  { id:"p12", img:"l:two-bears",       title:"Two on the shoulder",     location:"British Columbia",            date:"2026-08", cat:"Wildlife",  ratio:"16/9", exif:"",  alt:"Two black bears on the grassy shoulder of a road" },
+  { id:"p13", img:"l:aurora-treeline", title:"Green over the spruce",   location:"Peace Region, BC",            date:"2026-10", cat:"Night",     ratio:"3/2",  exif:"48mm · f/1.8 · 1s · ISO 16000",  alt:"Green aurora stretching above a dark spruce treeline" },
+  { id:"p14", img:"l:aurora-pointing", title:"Look up",                 location:"Peace Region, BC",            date:"2026-08", cat:"Night",     ratio:"3/2",  exif:"35mm · f/1.8 · 1/2 · ISO 25000", alt:"A person pointing up at the northern lights" },
+  { id:"p15", img:"l:tents-night",     title:"Two tents, no one else",  location:"Tumbler Ridge, BC",           date:"2026-08", cat:"Night",     ratio:"4/5",  exif:"24mm · f/1.8 · 1/2 · ISO 1600",  alt:"Two lit tents under a night sky" },
+  { id:"p16", img:"l:wildflowers",     title:"Six weeks of this",       location:"Hart Ranges, BC",             date:"2026-07", cat:"Detail",    ratio:"3/2",  exif:"48mm · f/1.8 · 1/2100 · ISO 64", alt:"Alpine wildflowers in close focus against a blurred mountain slope" }
 ];
+
 /* The "best of" print wall. l/t/w are % of the stage, rot in degrees, d = parallax depth */
 const COLLAGE = [
-  { id:"p03", l:3,  t:14, w:26, rot:-4, d:.18 },
-  { id:"p02", l:31, t:2,  w:24, rot:3,  d:.34 },
-  { id:"p11", l:60, t:10, w:25, rot:-2, d:.12 },
-  { id:"p06", l:10, t:55, w:18, rot:5,  d:.28 },
-  { id:"p05", l:36, t:50, w:25, rot:-3, d:.42 },
-  { id:"p15", l:67, t:50, w:17, rot:4,  d:.22 },
-  { id:"p12", l:84, t:22, w:14, rot:-7, d:.50 }
+  { id:"p05", l:3,  t:14, w:26, rot:-4, d:.18 },
+  { id:"p01", l:31, t:2,  w:24, rot:3,  d:.34 },
+  { id:"p03", l:60, t:10, w:25, rot:-2, d:.12 },
+  { id:"p11", l:10, t:55, w:18, rot:5,  d:.28 },
+  { id:"p13", l:36, t:50, w:25, rot:-3, d:.42 },
+  { id:"p09", l:67, t:50, w:17, rot:4,  d:.22 },
+  { id:"p16", l:84, t:22, w:14, rot:-7, d:.50 }
+];
+
+/* ── CLIPS (Aman's own footage, in assets/video/) ────────────────────
+   Short pieces of B-roll, not full films. Each one is an .mp4 with a
+   still (`poster`) shown until someone presses play — nothing downloads
+   until they do, so the page stays light.
+   vertical:true lays the clip out phone-shaped instead of widescreen.  */
+const CLIPS = [
+  { id:"c1", file:"assets/video/falls-aerial.mp4",  poster:"assets/video/falls-aerial-poster.webp",
+    title:"Straight down",      location:"Northern Rockies, BC", date:"2026-10", vertical:true,
+    alt:"Looking straight down from the air at water rushing over dark rock" },
+  { id:"c2", file:"assets/video/forest-drive.mp4",  poster:"assets/video/forest-drive-poster.webp",
+    title:"Nobody coming",      location:"Tumbler Ridge, BC",    date:"2026-09",
+    alt:"Driving a curving empty road through autumn forest" },
+  { id:"c3", file:"assets/video/valley-drive.mp4",  poster:"assets/video/valley-drive-poster.webp",
+    title:"Flat, then not",     location:"Fraser Valley, BC",    date:"2026-06",
+    alt:"Farmland running past a car window with mountains behind it" },
+  { id:"c4", file:"assets/video/aurora-drift.mp4",  poster:"assets/video/aurora-drift-poster.webp",
+    title:"It moves",           location:"Peace Region, BC",     date:"2026-04",
+    alt:"Northern lights drifting across the sky above a treeline" }
 ];
 
 /* ── INSTAGRAM ───────────────────────────────────────────────────────
@@ -127,23 +158,23 @@ const INSTAGRAM = {
   handle:"@selfishtraveller",
   url:"https://www.instagram.com/selfishtraveller/",
   highlights:[
-    { label:"Coast Range", img:"u:jagged", url:"" },
-    { label:"Rockies",     img:"u:turquoise", url:"" },
-    { label:"Wildlife",    img:"u:bear", url:"" },
-    { label:"Camp",        img:"u:tent2", url:"" },
-    { label:"Road trips",  img:"u:sunsethiker", url:"" },
-    { label:"Behind it",   img:"u:filmer", url:"" }
+    { label:"Monkman",    img:"l:waterfall", url:"" },
+    { label:"Stone Mtn",  img:"l:tundra-peak", url:"" },
+    { label:"Wildlife",   img:"l:deer", url:"" },
+    { label:"Camp",       img:"l:tents-night", url:"" },
+    { label:"Road trips", img:"l:autumn-road", url:"" },
+    { label:"Behind it",  img:"l:the-filmer", url:"" }
   ],
   reels:[
-    { url:"https://www.instagram.com/reel/Dc6dCkQOWi_/", poster:"u:lake2",     file:"", title:"Monkman Lake" },
-    { url:"https://www.instagram.com/reel/DcZPz5CB0pa/", poster:"u:mist",      file:"", title:"Cloud in the cedars" },
-    { url:"https://www.instagram.com/reel/DcTbnobuMZ5/", poster:"u:ridge",     file:"", title:"Ridge walk" },
-    { url:"https://www.instagram.com/reel/Db54PG5Ojs8/", poster:"u:river",     file:"", title:"Meltwater" },
-    { url:"https://www.instagram.com/reel/DNfCX71O18K/", poster:"u:tent",      file:"", title:"Night camp" },
-    { url:"https://www.instagram.com/reel/DLCKxa2ObUH/", poster:"u:goat",      file:"", title:"Goat on the ridge" },
-    { url:"https://www.instagram.com/reel/C-JjEYgR6Er/", poster:"u:inversion", file:"", title:"Above the clouds" }
+    { url:"https://www.instagram.com/reel/Dc6dCkQOWi_/", poster:"l:green-river",    file:"", title:"Monkman Lake" },
+    { url:"https://www.instagram.com/reel/DcZPz5CB0pa/", poster:"l:snow-face",      file:"", title:"Cloud in the cedars" },
+    { url:"https://www.instagram.com/reel/DcTbnobuMZ5/", poster:"l:ridge-rest",     file:"", title:"Ridge walk" },
+    { url:"https://www.instagram.com/reel/Db54PG5Ojs8/", poster:"l:waterfall",      file:"", title:"Meltwater" },
+    { url:"https://www.instagram.com/reel/DNfCX71O18K/", poster:"l:tents-night",    file:"", title:"Night camp" },
+    { url:"https://www.instagram.com/reel/DLCKxa2ObUH/", poster:"l:deer",           file:"", title:"Goat on the ridge" },
+    { url:"https://www.instagram.com/reel/C-JjEYgR6Er/", poster:"l:aspen-aerial",   file:"", title:"Above the clouds" }
   ],
-  posts:["u:clouds","u:bearface","u:turquoise","u:forestfog","u:goat2","u:tent2","u:jagged","u:eagle"]
+  posts:["l:aspen-aerial","l:deer","l:blue-tarn","l:green-river","l:two-bears","l:tents-night","l:snow-face","l:wildflowers"]
 };
 
 /* ── STOCK STAND-INS (Unsplash) — delete once real photos are in ───── */
